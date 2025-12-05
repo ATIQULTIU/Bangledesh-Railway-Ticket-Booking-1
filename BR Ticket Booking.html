@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bangladesh Railway Ticket Booking</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      width: 100%;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+    
+    .logo-container {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(30, 58, 138, 0.4);
+    }
+    
+    .train-icon {
+      font-size: 60px;
+    }
+    
+    h1 {
+      color: #1e293b;
+      font-size: 28px;
+      margin: 0 0 10px 0;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      color: #64748b;
+      font-size: 16px;
+      margin: 0;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    label {
+      display: block;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    input[type="text"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: white;
+    }
+    
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .seat-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 10px;
+    }
+    
+    .seat-card {
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: white;
+    }
+    
+    .seat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    
+    .seat-card.selected {
+      border-color: #667eea;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .seat-icon {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+    
+    .seat-name {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    
+    .seat-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: #10b981;
+    }
+    
+    .seat-card.selected .seat-price {
+      color: #fff;
+    }
+    
+    .price-summary {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      padding: 20px;
+      border-radius: 12px;
+      margin: 25px 0;
+      border: 2px solid #bae6fd;
+    }
+    
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    
+    .price-row:last-child {
+      margin-bottom: 0;
+      padding-top: 15px;
+      border-top: 2px dashed #7dd3fc;
+      font-weight: 700;
+      font-size: 20px;
+      color: #0c4a6e;
+    }
+    
+    .book-button {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .book-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+    
+    .book-button:active {
+      transform: translateY(0);
+    }
+    
+    .success-message {
+      display: none;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: 600;
+      animation: slideIn 0.5s ease;
+    }
+    
+    .success-message.show {
+      display: block;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+        border-radius: 0;
+      }
+      
+      .seat-options {
+        grid-template-columns: 1fr;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container">
+   <div class="header">
+    <div class="logo-container">
+     <div class="train-icon">
+      🚂
+     </div>
+    </div>
+    <h1 id="pageTitle">Bangladesh Railway</h1>
+    <p class="subtitle" id="pageSubtitle">Book Your Journey Today</p>
+   </div>
+   <form id="bookingForm">
+    <div class="form-group"><label for="passengerName">Passenger Name</label> <input type="text" id="passengerName" placeholder="Enter your full name" required>
+    </div>
+    <div class="form-group"><label for="travelDate">Travel Date</label> <input type="date" id="travelDate" required>
+    </div>
+    <div class="form-group"><label for="fromStation">From Station</label> <select id="fromStation" required> <option value="">Select departure station</option> <option value="dhaka">Dhaka</option> <option value="chittagong">Chittagong</option> <option value="sylhet">Sylhet</option> <option value="rajshahi">Rajshahi</option> <option value="khulna">Khulna</option> </select>
+    </div>
+    <div class="form-group"><label for="toStation">To Station</label> <select id="toStation" required> <option value="">Select destination station</option> <option value="dhaka">Dhaka</option> <option value="chittagong">Chittagong</option> <option value="sylhet">Sylhet</option> <option value="rajshahi">Rajshahi</option> <option value="khulna">Khulna</option> </select>
+    </div>
+    <div class="form-group"><label>Select Seat Type</label>
+     <div class="seat-options">
+      <div class="seat-card selected" data-price="500" data-type="normal">
+       <div class="seat-icon">
+        💺
+       </div>
+       <div class="seat-name">
+        Normal
+       </div>
+       <div class="seat-price">
+        ৳500
+       </div>
+      </div>
+      <div class="seat-card" data-price="1000" data-type="cabin">
+       <div class="seat-icon">
+        🛋️
+       </div>
+       <div class="seat-name">
+        Cabin
+       </div>
+       <div class="seat-price">
+        ৳1,000
+       </div>
+      </div>
+      <div class="seat-card" data-price="1500" data-type="vip">
+       <div class="seat-icon">
+        👑
+       </div>
+       <div class="seat-name">
+        VIP
+       </div>
+       <div class="seat-price">
+        ৳1,500
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="price-summary">
+     <div class="price-row"><span>Base Fare:</span> <span id="baseFare">৳500</span>
+     </div>
+     <div class="price-row"><span>Service Charge:</span> <span>৳50</span>
+     </div>
+     <div class="price-row"><span>Total Amount:</span> <span id="totalPrice">৳550</span>
+     </div>
+    </div><button type="submit" class="book-button">🎫 Confirm Booking</button>
+    <div id="successMessage" class="success-message">
+     ✅ Your ticket has been booked successfully!
+    </div>
+   </form>
+  </div>
+  <script>
+    const defaultConfig = {
+      page_title: "Bangladesh Railway",
+      page_subtitle: "Book Your Journey Today",
+      primary_color: "#667eea",
+      secondary_color: "#10b981",
+      background_color: "#ffffff",
+      text_color: "#1e293b",
+      accent_color: "#764ba2",
+      font_family: "Segoe UI",
+      font_size: 16
+    };
+
+    let selectedSeatPrice = 500;
+    const serviceCharge = 50;
+
+    // Seat selection logic
+    const seatCards = document.querySelectorAll('.seat-card');
+    seatCards.forEach(card => {
+      card.addEventListener('click', () => {
+        seatCards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedSeatPrice = parseInt(card.dataset.price);
+        updatePriceSummary();
+      });
+    });
+
+    function updatePriceSummary() {
+      const baseFare = document.getElementById('baseFare');
+      const totalPrice = document.getElementById('totalPrice');
+      const total = selectedSeatPrice + serviceCharge;
+      
+      baseFare.textContent = `৳${selectedSeatPrice.toLocaleString()}`;
+      totalPrice.textContent = `৳${total.toLocaleString()}`;
+    }
+
+    // Set minimum date to today
+    const dateInput = document.getElementById('travelDate');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.setAttribute('min', today);
+    dateInput.value = today;
+
+    // Form submission
+    const form = document.getElementById('bookingForm');
+    const successMessage = document.getElementById('successMessage');
+    
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      successMessage.classList.add('show');
+      
+      setTimeout(() => {
+        successMessage.classList.remove('show');
+        form.reset();
+        
+        // Reset to normal seat
+        seatCards.forEach(c => c.classList.remove('selected'));
+        seatCards[0].classList.add('selected');
+        selectedSeatPrice = 500;
+        updatePriceSummary();
+        dateInput.value = today;
+      }, 3000);
+    });
+
+    // Initialize Element SDK
+    async function onConfigChange(config) {
+      const titleElement = document.getElementById('pageTitle');
+      const subtitleElement = document.getElementById('pageSubtitle');
+      
+      if (titleElement) {
+        titleElement.textContent = config.page_title || defaultConfig.page_title;
+      }
+      if (subtitleElement) {
+        subtitleElement.textContent = config.page_subtitle || defaultConfig.page_subtitle;
+      }
+      
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+      const backgroundColor = config.background_color || defaultConfig.background_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const accentColor = config.accent_color || defaultConfig.accent_color;
+      const fontFamily = config.font_family || defaultConfig.font_family;
+      const fontSize = config.font_size || defaultConfig.font_size;
+      
+      document.body.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${accentColor} 100%)`;
+      
+      const container = document.querySelector('.container');
+      if (container) {
+        container.style.background = backgroundColor;
+      }
+      
+      const h1Elements = document.querySelectorAll('h1');
+      h1Elements.forEach(el => {
+        el.style.color = textColor;
+        el.style.fontFamily = `${fontFamily}, 'Segoe UI', sans-serif`;
+        el.style.fontSize = `${fontSize * 1.75}px`;
+      });
+      
+      const labels = document.querySelectorAll('label');
+      labels.forEach(el => {
+        el.style.color = textColor;
+        el.style.fontFamily = `${fontFamily}, 'Segoe UI', sans-serif`;
+        el.style.fontSize = `${fontSize * 0.875}px`;
+      });
+      
+      const subtitle = document.querySelector('.subtitle');
+      if (subtitle) {
+        subtitle.style.fontFamily = `${fontFamily}, 'Segoe UI', sans-serif`;
+        subtitle.style.fontSize = `${fontSize}px`;
+      }
+      
+      const bookButton = document.querySelector('.book-button');
+      if (bookButton) {
+        bookButton.style.background = `linear-gradient(135deg, ${secondaryColor} 0%, ${secondaryColor}dd 100%)`;
+        bookButton.style.fontFamily = `${fontFamily}, 'Segoe UI', sans-serif`;
+        bookButton.style.fontSize = `${fontSize * 1.125}px`;
+      }
+      
+      const logoContainer = document.querySelector('.logo-container');
+      if (logoContainer) {
+        logoContainer.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${accentColor} 100%)`;
+      }
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.primary_color || defaultConfig.primary_color,
+              set: (value) => {
+                config.primary_color = value;
+                window.elementSdk.setConfig({ primary_color: value });
+              }
+            },
+            {
+              get: () => config.secondary_color || defaultConfig.secondary_color,
+              set: (value) => {
+                config.secondary_color = value;
+                window.elementSdk.setConfig({ secondary_color: value });
+              }
+            },
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => {
+                config.background_color = value;
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => {
+                config.text_color = value;
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            },
+            {
+              get: () => config.accent_color || defaultConfig.accent_color,
+              set: (value) => {
+                config.accent_color = value;
+                window.elementSdk.setConfig({ accent_color: value });
+              }
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => {
+              config.font_family = value;
+              window.elementSdk.setConfig({ font_family: value });
+            }
+          },
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
+            set: (value) => {
+              config.font_size = value;
+              window.elementSdk.setConfig({ font_size: value });
+            }
+          }
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["page_title", config.page_title || defaultConfig.page_title],
+          ["page_subtitle", config.page_subtitle || defaultConfig.page_subtitle]
+        ])
+      });
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a74651855b4dd0d',t:'MTc2NDYxMTA5MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
